@@ -1,6 +1,7 @@
 <?php
 
 use app\models\Devices;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\grid\ActionColumn;
@@ -31,6 +32,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'id',
             [
                 'attribute' => 'type_id',
+                'filter' => Html::activeDropDownList($searchModel, 'type_id', ArrayHelper::map(\app\models\Types::find()->asArray()->all(), 'id', 'name'), ['class'=>'form-control', 'prompt' => 'Выберите тип']),
                 'value' => function ($model) {
                     if (!$model['type_id']) return null;
                     $value = \app\models\Types::find()->where(['id' => $model['type_id']])->one();
