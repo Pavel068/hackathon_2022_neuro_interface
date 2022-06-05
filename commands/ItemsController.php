@@ -39,10 +39,12 @@ class ItemsController extends Controller
             }
 
             // Добавить единицу
-            foreach ($elem['items'] as $i) {
-                $item = new Items();
-                $item->load(array_merge(['device_id' => $device->id], $i), '');
-                $item->save();
+            if ($elem['items']) {
+                foreach ($elem['items'] as $i) {
+                    $item = new Items();
+                    $item->load(array_merge(['device_id' => $device->id], $i), '');
+                    $item->save();
+                }
             }
         }
 

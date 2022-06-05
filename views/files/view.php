@@ -1,6 +1,7 @@
 <?php
 
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
@@ -32,7 +33,13 @@ $this->params['breadcrumbs'][] = $this->title;
             'id',
             'user_id',
             'name',
-            'url:url',
+            [
+                'attribute' => 'url',
+                'format' => 'url',
+                'value' => function ($model) {
+                    return Url::base(true) . '/uploads/' . $model->url;
+                }
+            ],
             'type',
             'extension',
             'created_at',

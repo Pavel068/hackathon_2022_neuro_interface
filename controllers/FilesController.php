@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\helpers\Helper;
 use app\models\Files;
 use app\models\FilesSearch;
 use Yii;
@@ -42,6 +43,8 @@ class FilesController extends Controller
     {
         $searchModel = new FilesSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
+
+        Helper::callML();
 
         return $this->render('index', [
             'searchModel' => $searchModel,

@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\helpers\Helper;
 use app\models\Devices;
 use app\models\DevicesSearch;
 use yii\web\Controller;
@@ -40,6 +41,8 @@ class DevicesController extends Controller
     {
         $searchModel = new DevicesSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
+
+        Helper::writeDB();
 
         return $this->render('index', [
             'searchModel' => $searchModel,

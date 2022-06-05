@@ -52,7 +52,7 @@ class Files extends \yii\db\ActiveRecord
     {
         return [
             [['user_id'], 'integer'],
-            [['name', 'url'], 'required'],
+            [['name'], 'required'],
             [['created_at', 'updated_at'], 'safe'],
             [['name', 'url'], 'string', 'max' => 255],
             [['type', 'extension'], 'string', 'max' => 16],

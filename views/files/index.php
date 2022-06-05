@@ -30,7 +30,13 @@ $this->params['breadcrumbs'][] = $this->title;
 
             'id',
             'name',
-            'url:url',
+            [
+                'attribute' => 'url',
+                'format' => 'url',
+                'value' => function ($model) {
+                    return Url::base(true) . '/uploads/' . $model->url;
+                }
+            ],
             'type',
             'extension',
             //'created_at',
