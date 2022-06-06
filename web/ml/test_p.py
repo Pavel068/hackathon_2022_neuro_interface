@@ -1,39 +1,97 @@
 import pandas as pd
 import os
 import tabula
-
+import sys
 import warnings
+import json
+import fitz
 warnings.filterwarnings("ignore")
 
-df = pd.read_csv('Дата-сет для задачи №1/Дата-сет_Задача 1.csv',encoding = 'cp1251',sep = ';')
-df_file = df[df['Наименование_файла_с_описанием']==df['Наименование_файла_с_описанием']]
-import fitz # install using: pip install PyMuPDF
+si = ['т', 'ц', 'кг', 'г', 'мг', 'км', 'м', 'мм', 'дм', 'мк', 'ммк', 'Å', 'Х', 'га', 'А', 'м2', 'мм2', 'см2',
+              'км2', 'км3', 'м3', 'см3', 'мм3', 'л', 'мл', 'ч',
+              'мин', 'сек', 'мсек', 'мксек', 'ат', 'мм рт. ст.', '°С', '°R', '°F ', 'K', 'ка', 'а', 'ма', 'мка', 'кВ',
+              'В', 'мВ', 'мкВ', 'моМ', 'ом',
+              'ком', 'Вт', 'мВт', 'мкВт', 'кв*ч', '%', 'I', 'Гц', 'Гц', 'V', 'ГГц', 'Вт/м2', 'мкг/дм3', 'Кл', 'мА', 'ф',
+              'Ф', 'мкФ', 'мкф', 'пф', 'пФ', 'гн', 'кГц', 'мГц', 'Гц']
+
+
+import pandas as pd
+import os
+from tqdm.auto import tqdm
+
+
+
+def system(input_file):
+    import fitz
+    from itertools import groupby
+
+
+    def print_hightlight_text(page, rect):
+
+        t=''
+        words = page.getText("words")  # list of words on page
+        words.sort(key=lambda w: (w[3], w[0]))  # ascending y, then x
+        mywords = [w for w in words if fitz.Rect(w[:4]).intersects(rect)]
+        group = groupby(mywords, key=lambda w: w[3])
+        for y1, gwords in group:
+            t+=(" ".join(w[4] for w in gwords))
+
+        return t
+
+    doc = fitz.open(os.path.join(input_file))
+    for page in doc:
+        annot = page.firstAnnot
+        if annot:
+            y=print_hightlight_text(page, annot.rect)
+    try:
+        o=0 #print(y)
+    except:
+
+         for j in si:
+            text=''   #временное решение для pdf где нет разметки. Вместо text должен быть весь текст страниц
+            if j in text:
+                return j
+            else:
+                return 0
+
+    f=y.find(',')
+    lenn=len(y)-f
+    ans=''
+    for i in range(1,lenn):
+        ans+=y[f+i].replace(':', "")
+    if ans not in si:
+        ans = 'null'
+    return ans
+
+
+ # install using: pip install PyMuPDF
 def get_first_page_from_pdf(fname):
-    with fitz.open(os.path.join('Дата-сет для задачи №1/Разметка/',fname)) as doc:
+    with fitz.open(os.path.join(fname)) as doc:
         text = ""
         for page in doc:
             text += page.get_text()
     return text
-text=get_first_page_from_pdf('2019-76302-19.pdf')
 
 def get_errors_from_pdf(fname):
-    tables = tabula.read_pdf(os.path.join('Дата-сет для задачи №1','Разметка/',fname), pages="all")
+    tables = tabula.read_pdf(os.path.join(fname), pages="all",silent = True)
     flag = False
+    z = 0.0
+
 
     for table in tables:
         for index, row in table.iterrows():
             if  (("среднеквадр" in str(row.iloc[0]).lower()) or ("клонен" in str(row.iloc[0]).lower())) and not flag:
                 z = (float(row.iloc[1].split()[0].replace(',','.')))
                 flag = True
-    return z 
-            
+    return z
+
 def get_device_name(f):
     stopword = '(далее'
     text = get_first_page_from_pdf(f)
     if (stopword in text):
         return(text.split(stopword)[0].split('Назначение средства измерений')[1])
-        
-    
+
+
 
 
 def country(text): #text -весь текст pdf
@@ -64,19 +122,26 @@ def country(text): #text -весь текст pdf
 
     return d
 
+
+df = pd.read_csv('Дата-сет для задачи №1/Дата-сет_Задача 1.csv',encoding = 'cp1251',sep = ';')
+df_file = df[df['Наименование_файла_с_описанием']==df['Наименование_файла_с_описанием']]
+s = sys.argv[1]
+text=get_first_page_from_pdf(s)
 country = (country(text))
-name = (get_device_name('2019-51035-12.pdf'))
-error = (get_errors_from_pdf('2019-51035-12.pdf'))
+name = (get_device_name(s))
+error = (get_errors_from_pdf(s))
+measure = (system(s))
 
-d = dict()
-d['name'] = name
-d['country'] = country
-d['error'] = error
+f = open('template.json')
 
-import json
-
-with open('new_file.json', 'w') as f:
-    json.dump(d, f, indent=2)
-    print("New json file is created from data.json file")
+# returns JSON object as
+# a dictionary
 
 
+data = json.load(f)
+(data[0]['device']['type']) = name
+(data[0]['device']['country']) = country
+(data[0]['device']['error']) = error
+(data[0]['device']['unit']) = measure
+
+json.dump(data, sys.stdout)

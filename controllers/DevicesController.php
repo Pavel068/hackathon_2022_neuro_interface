@@ -42,8 +42,6 @@ class DevicesController extends Controller
         $searchModel = new DevicesSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
 
-        Helper::writeDB();
-
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,

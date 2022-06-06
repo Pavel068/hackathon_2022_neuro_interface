@@ -4,15 +4,16 @@ namespace app\helpers;
 
 class Helper
 {
-    public static function callML()
+    public static function callML($file_name)
     {
-        $path = getcwd() . '/test.py';
-        shell_exec("python $path > 1.txt");
+        $path = getcwd();
+        $code = "cd $path/ml && python3 test_p.py ../uploads/$file_name > $path/../commands/data/items.json";
+        shell_exec($code);
     }
 
     public static function writeDB()
     {
         $path = getcwd();
-        shell_exec("php $path/../yii items/mass-create > 1.txt");
+        shell_exec("php $path/../yii items/mass-create");
     }
 }

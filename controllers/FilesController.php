@@ -44,8 +44,6 @@ class FilesController extends Controller
         $searchModel = new FilesSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
 
-        Helper::callML();
-
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -154,6 +152,10 @@ class FilesController extends Controller
                     if (file_exists(\Yii::getAlias('@webroot') . $old_file)) {
                         @unlink(\Yii::getAlias('@webroot') . $old_file);
                     }
+
+                    Helper::callML($model->url);
+                    Helper::writeDB();
+
                     return $this->redirect(['view', 'id' => $model->id]);
                 } else {
                     return $model->getErrors();

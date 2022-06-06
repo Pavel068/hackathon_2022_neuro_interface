@@ -34,3 +34,5 @@ tests/_support/_generated
 
 .env
 commands/data
+web/uploads
+web/ml/Дата-сет для задачи №1

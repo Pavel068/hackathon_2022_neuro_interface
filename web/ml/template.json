@@ -1,0 +1,16 @@
+[
+  {
+    "device": {
+      "type": "Счетчик газа бытовой",
+      "name": null,
+      "brand": null,
+      "model": null,
+      "country": "Россия",
+      "unit": null,
+      "scale_min": null,
+      "scale_max": null,
+      "error": 0.00001
+    },
+    "items": []
+  }
+]
